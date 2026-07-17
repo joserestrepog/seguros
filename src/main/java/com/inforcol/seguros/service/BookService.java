@@ -26,6 +26,10 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
+    public Optional<BookModel> getBookByTitulo(String titulo) {
+        return bookRepository.findByTitulo(titulo);
+    }
+
     public BookModel updateBook(Long id, BookModel newBookData) {
         BookModel bookModel = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));

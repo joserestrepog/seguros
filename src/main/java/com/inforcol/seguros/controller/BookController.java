@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inforcol.seguros.model.BookModel;
@@ -28,26 +29,33 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<List<BookModel>> getBooks() {
-        log.info("BookController -> getBooks();");
         return ResponseEntity.ok(this.bookService.getBooks());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<BookModel> getBookById(@PathVariable Long id) {
         return bookService.getBookById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/titulo/{titulo:.+}")
+    public ResponseEntity<BookModel> getBookByTitulo(@PathVariable("titulo") String titulo) {
+        return bookService.getBookByTitulo(titulo)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<BookModel> createBook(@RequestBody BookModel bookModel) {
+        log.info("\n BookController -> createBook() \n -> Datos: {}", bookModel);
         return ResponseEntity.ok(this.bookService.createBook(bookModel));
     }
         
     @PutMapping("/{id}")
     public ResponseEntity<BookModel> updateBook(@PathVariable Long id, @RequestBody BookModel bookModel) {
         BookModel updatedBook = bookService.updateBook(id, bookModel);
-        return ResponseEntity.ok(updatedBook); // 200
+        return ResponseEntity.ok(updatedBook);
     }
 
     @DeleteMapping("/{id}")
