@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.inforcol.seguros.model.BookModel;
 import com.inforcol.seguros.service.BookService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/books")
+@Slf4j
 public class BookController {
     
     @Autowired
@@ -25,6 +28,7 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<List<BookModel>> getBooks() {
+        log.info("BookController -> getBooks();");
         return ResponseEntity.ok(this.bookService.getBooks());
     }
 
