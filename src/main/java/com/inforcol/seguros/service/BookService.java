@@ -2,46 +2,94 @@ package com.inforcol.seguros.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.inforcol.seguros.dto.book.BookRequestDto;
+import com.inforcol.seguros.dto.book.BookResponseDto;
+import com.inforcol.seguros.dto.category.CategoryResponseDto;
+import com.inforcol.seguros.model.Author;
+import com.inforcol.seguros.model.Category;
+import com.inforcol.seguros.repository.AuthorRepository;
+import com.inforcol.seguros.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.inforcol.seguros.model.BookModel;
+
+import com.inforcol.seguros.model.Book;
 import com.inforcol.seguros.repository.BookRepository;
 
 @Service
 public class BookService {
-    
+
     @Autowired
     private BookRepository bookRepository;
 
-    public BookModel createBook(BookModel bookModel){
-        return this.bookRepository.save(bookModel);
+    @Autowired
+    private AuthorRepository authorRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private BookMapper bookMapper;
+
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
-    public List<BookModel> getBooks() {
-        return bookRepository.findAll();
+    public BookResponseDto createBook(BookRequestDto dto) {
+        // 1. Buscar al Autor
+        Author author = authorRepository.findById(dto.getAuthorId())
+                .orElseThrow(() -> new RuntimeException("Autor no encontrado con ID: " + dto.getAuthorId()));
+
+        // 2. Buscar las Categorías
+        List<Category> categories = categoryRepository.findAllById(dto.getCategoryIds());
+
+        // 3. Crear entidad y asignar relaciones
+        Book book = new Book();
+        book.setTitle(dto.getTitle());
+        book.setIsbn(dto.getIsbn());
+        book.setPrice(dto.getPrice());
+        book.setAuthor(author);
+        book.setCategories(categories);
+
+        return bookMapper.toDto(bookRepository.save(book));
     }
 
-    public Optional<BookModel> getBookById(Long id) {
-        return bookRepository.findById(id);
+    public List<BookResponseDto> getAllBooks() {
+        return bookRepository.findAll()
+                .stream()
+                .map(bookMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public Optional<BookModel> getBookByTitulo(String titulo) {
-        return bookRepository.findByTitulo(titulo);
+    public BookResponseDto getBookById(Long id) {
+        return bookRepository.findById(id)
+                .map(bookMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("book not found with ID: " + id));
     }
 
-    public BookModel updateBook(Long id, BookModel newBookData) {
-        BookModel bookModel = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found with id: " + id));
+    public BookResponseDto updateBook(Long id, BookRequestDto dto) {
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("book not found with ID: " + id));
 
-        bookModel.setTitulo(newBookData.getTitulo());
-        bookModel.setCodigo(newBookData.getCodigo());
-        return bookRepository.save(bookModel);
+        Author author = authorRepository.findById(dto.getAuthorId())
+                .orElseThrow(() -> new RuntimeException("Author not found with ID: " + dto.getAuthorId()));
+
+        List<Category> categories = categoryRepository.findAllById(dto.getCategoryIds());
+
+        existingBook.setTitle(dto.getTitle());
+        existingBook.setIsbn(dto.getIsbn());
+        existingBook.setPrice(dto.getPrice());
+        existingBook.setAuthor(author);
+        existingBook.setCategories(categories);
+
+        return bookMapper.toDto(bookRepository.save(existingBook));
     }
 
     public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("book not found with ID: " + id));
+        bookRepository.delete(book);
     }
-
 
 }

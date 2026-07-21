@@ -1,26 +1,34 @@
 package com.inforcol.seguros.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
-import com.inforcol.seguros.dto.AuthorDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.inforcol.seguros.dto.author.AuthorRequestDto;
+import com.inforcol.seguros.dto.author.AuthorResponseDto;
 import com.inforcol.seguros.service.AuthorService;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
 @RestController
-@AllArgsConstructor
-@NoArgsConstructor
+@RequestMapping("/api/authors")
 public class AuthorController {
 
-    @Autowired
-    private AuthorService authorService;
+    private final AuthorService authorService;
 
-    @PostMapping("/authors")
-    public ResponseEntity<AuthorDTO> createAuthor(AuthorDTO authorDTO) {
-        return ResponseEntity.ok(authorService.createAuthor(authorDTO));
+    AuthorController(AuthorService authorService) {
+        this.authorService = authorService;
+    }
+
+    @PostMapping
+    public ResponseEntity<AuthorResponseDto> createAuthor(@RequestBody AuthorRequestDto dto) {
+        AuthorResponseDto response = authorService.createAuthor(dto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AuthorResponseDto>> getAllAuthors() {
+        List<AuthorResponseDto> authors = authorService.getAllAuthors();
+        return ResponseEntity.ok(authors);
     }
 }

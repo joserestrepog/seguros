@@ -1,34 +1,40 @@
 package com.inforcol.seguros.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.inforcol.seguros.dto.AuthorDTO;
+import com.inforcol.seguros.dto.author.AuthorRequestDto;
+import com.inforcol.seguros.dto.author.AuthorResponseDto;
 import com.inforcol.seguros.model.Author;
 import com.inforcol.seguros.repository.AuthorRepository;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
 public class AuthorService {
 
     @Autowired
     private AuthorRepository authorRepository;
 
-    public AuthorDTO createAuthor(AuthorDTO authorDTO) {
+    @Autowired
+    private AuthorMapper authorMapper;
 
-        Author author = new Author();
-        author.setName(authorDTO.getNameAuthor());
-        author.setCountry(authorDTO.getCountryAuthor());
-
-        authorRepository.save(author);
-
-        return AuthorDTO.builder()
-                .nameAuthor(author.getName())
-                .countryAuthor(author.getCountry())
-                .build();
+    public AuthorService(AuthorRepository AuthorRepository) {
+        this.authorRepository = AuthorRepository;
     }
+
+    public AuthorResponseDto createAuthor(AuthorRequestDto dto) {
+        Author savedAuthor = authorRepository.save(authorMapper.toEntity(dto));
+        return authorMapper.toDto(savedAuthor);
+    }
+
+    public List<AuthorResponseDto> getAllAuthors() {
+
+        return authorRepository.findAll()
+                .stream()
+                .map(authorMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }

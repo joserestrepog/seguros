@@ -1,4 +1,4 @@
-package com.inforcol.seguros.dto;
+package com.inforcol.seguros.dto.author;
 
 import lombok.Builder;
 import lombok.Data;
