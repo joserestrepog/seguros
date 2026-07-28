@@ -1,21 +1,19 @@
 package com.inforcol.seguros.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.inforcol.seguros.dto.book.BookRequestDto;
 import com.inforcol.seguros.dto.book.BookResponseDto;
-import com.inforcol.seguros.dto.category.CategoryResponseDto;
-import com.inforcol.seguros.model.Author;
-import com.inforcol.seguros.model.Category;
-import com.inforcol.seguros.repository.AuthorRepository;
-import com.inforcol.seguros.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.inforcol.seguros.model.Author;
 import com.inforcol.seguros.model.Book;
+import com.inforcol.seguros.model.Category;
+import com.inforcol.seguros.repository.AuthorRepository;
 import com.inforcol.seguros.repository.BookRepository;
+import com.inforcol.seguros.repository.CategoryRepository;
 
 @Service
 public class BookService {

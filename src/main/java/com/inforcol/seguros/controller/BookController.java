@@ -16,14 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inforcol.seguros.dto.book.BookRequestDto;
 import com.inforcol.seguros.dto.book.BookResponseDto;
-import com.inforcol.seguros.dto.category.CategoryResponseDto;
-import com.inforcol.seguros.model.Book;
 import com.inforcol.seguros.service.BookService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/books")
 @Slf4j
 public class BookController {
 
